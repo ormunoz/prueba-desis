@@ -35,14 +35,14 @@ try {
 
             <table border="1">
                 <tr>
-                    <th>Candidatos</th>
-                    <th>Cantidad de Votos</th>
+                    <th>Nombre de la encuesta</th>
+                    <th>Encuestas Seleccionadas</th>
           
                 </tr>
 
                 <?php
                 // Consulta SQL para recuperar información de los votantes
-                $sql = "SELECT c.description AS Nombre_Encuesta, COUNT(v.encuesta_id) AS votos
+                $sql = "SELECT c.description AS nombre_encuesta, COUNT(v.encuesta_id) AS encuesta
                 FROM votante_encuesta v
                 INNER JOIN encuesta c ON v.encuesta_id  = c.id
                 GROUP BY c.description;";
@@ -51,8 +51,8 @@ try {
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $row["Nombre_Encuesta"] . "</td>";
-                        echo "<td>" . $row["votos"] . "</td>";
+                        echo "<td>" . $row["nombre_encuesta"] . "</td>";
+                        echo "<td>" . $row["encuesta"] . "</td>";
                         echo "</tr>";
                     }
                 }

@@ -14,19 +14,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validar que el RUT sea único
     $sql_check = "SELECT COUNT(*) FROM votante WHERE rut = ?";
+    // evitamos ataques de inyeccion con la siguiente secuencia 
     $stmt_check = $conn->prepare($sql_check);
+    // vinculamos los params
     $stmt_check->bind_param("s", $rut);
+    // ejecutamos la secuencia 
     $stmt_check->execute();
+    // tomamos el resultado y lo dejamos en la variable count
     $stmt_check->bind_result($count);
+    // obtenemos el valor de la consulta
     $stmt_check->fetch();
 
+    // si count es mayor a 0 significa que si existe un rut
     if ($count > 0) {
-        http_response_code(400);
-        echo json_encode(['error' => 'El RUT ya ha sido registrado.']);
+        $response = ['success' => false, 'message' => 'El RUT ya ha sido registrado.'];
+        echo json_encode($response);
     } else {
         $stmt_check = "";
         // Verificar que al menos 2 encuestas se han seleccionado
-        if (isset($encuestas) && is_array($encuestas) && count($encuestas) >= 2) {
+        // y que exista la encuesta
+        if (is_array($encuestas) && count($encuestas) >= 2) {
             // Preparamos la consulta para insertar el voto
             $sql_insert = "INSERT INTO votante (nombre_apellido, alias, rut, email, comuna_id, candidato_id) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert = $conn->prepare($sql_insert);
@@ -50,21 +57,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_encuesta->execute();
                 }
 
-                $response = ['message' => '¡Voto registrado con éxito!'];
+                $response = ['success' => true, 'message' => '¡Voto registrado con éxito!'];
                 echo json_encode($response);
             } else {
                 http_response_code(500);
-                echo json_encode(['error' => 'Error al registrar el voto en la base de datos']);
+                echo json_encode(['success' => false, 'error' => 'Error al registrar el voto en la base de datos']);
             }
         } else {
-            http_response_code(400);
-            echo json_encode(['error' => 'Debes seleccionar al menos 2 encuestas.']);
+            $response = ['success' => false, 'message' => 'Debes seleccionar al menos 2 encuestas.'];
+            echo json_encode($response);
         }
     }
 } else {
-    // Manejar solicitud incorrecta
     http_response_code(400);
-    echo json_encode(['error' => 'Solicitud incorrecta']);
+    echo json_encode(['success' => false, 'error' => 'Solicitud incorrecta']);
 }
 
 

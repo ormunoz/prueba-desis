@@ -31,7 +31,7 @@ try {
     </header>
     <main>
         <div class="container">
-            <h1>Votaciones</h1>
+            <h1>Encuesta</h1>
 
             <table border="1">
                 <tr>

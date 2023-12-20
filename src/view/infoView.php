@@ -48,8 +48,9 @@ try {
                 $sql = "SELECT v.id, v.nombre_apellido, v.rut, v.alias, v.email, c.nombre AS nombre_comuna 
         FROM votante AS v 
         JOIN comuna AS c ON v.comuna_id = c.id";
+                // ejecutamos la consulta sql y la almacenamos en resultS
                 $result = $conexion->query($sql);
-                // Mostrar los resultados en la tabla
+                // Mostrar los resultados en la tabla pero antes debemos preguntar si existe almenos 1 registro
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";

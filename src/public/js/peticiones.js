@@ -9,8 +9,17 @@ function clean() {
 }
 
 function enviarDatosFormulario() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
   const formData = new FormData(document.getElementById("votingForm"));
   const url = "../controller/votacionesController.php";
+
+  const atLeastOneChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+  if (!atLeastOneChecked) {
+    event.preventDefault(); // Evitar que el formulario se envíe si ningún checkbox está marcado
+    alert('Debes seleccionar al menos 2 encuestas.');
+  }
+
   // Realizar una solicitud POST 
   fetch(url, {
     method: "POST",
@@ -18,14 +27,17 @@ function enviarDatosFormulario() {
   })
     .then(response => response.json())
     .then(data => {
-      if(!data.error) {
-        alert("El usuario ha votado con exito!!");
+      if (!data.success) {
+        alert(data.message); // Muestra el mensaje de error en caso de fallo
+      } else {
+        alert("El usuario ha votado con éxito!!");
         clean();
-      }else{
-        alert(data.error)
       }
     })
-    
+    .catch(error => {
+      console.error('Error:', error);
+      // Manejo de errores de red u otros errores de solicitud.
+    });
 }
 
 // Función para manejar el envío del formulario
@@ -58,7 +70,7 @@ function cargarRegionesYComunas() {
 
   selectRegion.addEventListener("change", function () {
     if (selectRegion.value === "0") {
-      // Si se selecciona la opción "Seleccione una región," desactivar el campo "Comuna"
+      // Si se selecciona la opción "Seleccione una región," desactivara el campo "Comuna"
       selectComuna.disabled = true;
       selectComuna.value = "0"; // Restablecer el valor a "Seleccione una comuna"
     } else {
